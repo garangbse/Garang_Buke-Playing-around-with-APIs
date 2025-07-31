@@ -21,22 +21,32 @@ async function fetchStores() {
   }
 }
 
-function renderDeal(container, deal) {
-  const dealEl = document.createElement("div");
-  dealEl.className = "deal";
-  dealEl.innerHTML = `
-    <img src="${deal.thumb}" alt="${deal.title}" />
-    <div>
-      <h3>${deal.title}</h3>
-      <p><strong>Store:</strong> ${storeMap[deal.storeID] || "Unknown"}</p>
-      <p><strong>Sale Price:</strong> $${deal.salePrice}</p>
-      <p><strong>Original Price:</strong> $${deal.normalPrice}</p>
-      <p><strong>Discount:</strong> ${parseFloat(deal.savings).toFixed(0)}%</p>
-      <a href="https://www.cheapshark.com/redirect?dealID=${deal.dealID}" target="_blank">View Deal</a>
-    </div>
-  `;
-  container.appendChild(dealEl);
+function renderDeal(container, deals) {
+  container.innerHTML = ""; // Clear previous results
+
+  if (!deals || deals.length === 0) {
+    container.innerHTML = "<p>No game available.</p>";
+    return;
+  }
+
+  deals.forEach((deal) => {
+    const dealEl = document.createElement("div");
+    dealEl.className = "deal";
+    dealEl.innerHTML = `
+      <img src="${deal.thumb}" alt="${deal.title}" />
+      <div>
+        <h3>${deal.title}</h3>
+        <p><strong>Store:</strong> ${storeMap[deal.storeID] || "Unknown"}</p>
+        <p><strong>Sale Price:</strong> $${deal.salePrice}</p>
+        <p><strong>Original Price:</strong> $${deal.normalPrice}</p>
+        <p><strong>Discount:</strong> ${parseFloat(deal.savings).toFixed(0)}%</p>
+        <a href="https://www.cheapshark.com/redirect?dealID=${deal.dealID}" target="_blank">View Deal</a>
+      </div>
+    `;
+    container.appendChild(dealEl);
+  });
 }
+
 
 // Suggest top deals as user types
 async function suggestGames(query) {
