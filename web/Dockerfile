@@ -1,21 +1,32 @@
 FROM ubuntu:24.04
 
 ENV DEBIAN_FRONTEND=noninteractive
+
+# Install Nginx and clean up
 RUN apt-get update -qq && \
-    apt-get install -y --no-install-recommends \
-        nginx openssh-server sudo iputils-ping ca-certificates && \
-    mkdir /run/sshd && \
-    if ! id -u ubuntu >/dev/null 2>&1; then \
-        useradd --create-home --uid 1000 --shell /bin/bash ubuntu; \
-    fi && \
-    echo 'ubuntu:pass123' | chpasswd && \
-    usermod -aG sudo ubuntu && \
-    sed -ri 's/#?PermitRootLogin.*/PermitRootLogin no/'  /etc/ssh/sshd_config && \
-    sed -ri 's/#?PasswordAuthentication.*/PasswordAuthentication yes/' /etc/ssh/sshd_config && \
+    apt-get install -y --no-install-recommends nginx ca-certificates && \
     apt-get clean && rm -rf /var/lib/apt/lists/*
 
-RUN ssh-keygen -A
+# Create app directory in nginx root
+RUN mkdir -p /var/www/html/game-deals-tracker
 
-EXPOSE 80 22
+# Copy your static frontend files into the container
+COPY ./game-deals-tracker/ /var/www/html/game-deals-tracker/
 
-CMD bash -c "service nginx start && /usr/sbin/sshd -D"
+# Configure nginx to serve your app
+RUN rm /etc/nginx/sites-enabled/default && \
+    echo 'server {\n\
+        listen 80;\n\
+        server_name localhost;\n\
+        root /var/www/html/game-deals-tracker;\n\
+        index index.html;\n\
+        location / {\n\
+            try_files $uri $uri/ =404;\n\
+        }\n\
+    }' > /etc/nginx/sites-available/game-deals && \
+    ln -s /etc/nginx/sites-available/game-deals /etc/nginx/sites-enabled/
+
+EXPOSE 80
+
+# Start nginx in foreground
+CMD ["nginx", "-g", "daemon off;"]
