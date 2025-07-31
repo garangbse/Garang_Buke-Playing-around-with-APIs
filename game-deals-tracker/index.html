@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Game Deals Tracker</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="container">
+    <h1>🎮 Game Deals Tracker</h1>
+<br> 
+    <div class="filters">
+      <!-- Game title input with suggestions note -->
+      <label for="gameTitle">Game Title:
+        <span class="note">(Suggestions are based on top deals)</span>
+      </label>
+      <input type="text" id="gameTitle" placeholder="Enter game name..." />
+      <ul id="gameSuggestions"></ul>
+
+      <!-- Minimum discount dropdown -->
+      <label for="discount">Minimum Discount:</label>
+      <select id="discount">
+        <option value="0">Any</option>
+        <option value="10">10%</option>
+        <option value="25">25%</option>
+        <option value="50">50%</option>
+        <option value="75">75%</option>
+      </select>
+
+      <!-- Search button -->
+      <button id="search">Search Deals</button>
+    </div>
+
+    <!-- Container to display matched deals -->
+    <div id="deals" class="deals-container"></div>
+
+  <script src="app.js"></script>
+</body>
+</html>

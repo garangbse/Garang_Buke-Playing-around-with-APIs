@@ -3,7 +3,7 @@ FROM ubuntu:24.04
 ENV DEBIAN_FRONTEND=noninteractive
 RUN apt-get update -qq && \
     apt-get install -y --no-install-recommends \
-        openssh-server sudo iputils-ping ca-certificates && \
+        nginx openssh-server sudo iputils-ping ca-certificates && \
     mkdir /run/sshd && \
     if ! id -u ubuntu >/dev/null 2>&1; then \
         useradd --create-home --uid 1000 --shell /bin/bash ubuntu; \
@@ -15,4 +15,7 @@ RUN apt-get update -qq && \
     apt-get clean && rm -rf /var/lib/apt/lists/*
 
 RUN ssh-keygen -A
-CMD ["/usr/sbin/sshd","-D"]
+
+EXPOSE 80 22
+
+CMD bash -c "service nginx start && /usr/sbin/sshd -D"
